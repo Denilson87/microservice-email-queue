@@ -25,6 +25,37 @@ async function sendEmail(request, reply){
     }
 }
 
+
+async function ScheduleSend(request, reply){
+
+    const {
+    emails
+      DateMeeting,
+      TimeMeeting,
+      firstNames,
+      localMeeting
+    } = request.body
+
+    const schedule = `Prezados, espero que estejam todos bem, informa-se aos senhores ${firstNames} que no ${DateMeeting} 
+    teremos um encontro no ${localMeeting} apartir das ${TimeMeeting} obrigado. `
+
+
+    try {
+        await MailQueue.add{(
+            to: emails,
+            from: process.env.EMAIL_FROM,
+            subject: "Agendamento do encontro",
+            text: schedule
+        )}
+        return reply.code(201).send();
+
+    } catch (error) {
+        return reply.code(500).send("Internal Server Error");
+
+    }
+}
+
+
 module.exports = {
     sendEmail
 }
